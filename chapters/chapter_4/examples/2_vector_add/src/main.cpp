@@ -6,7 +6,7 @@
 
 
 int main() {
-        int N = 100'000'000;
+    int N = 100'000'000;
     size_t size = N * sizeof(float);
 
     float *h_A = (float *)malloc(size);
@@ -46,7 +46,7 @@ int main() {
 
     cudaEventRecord(startEvent, 0);
 
-    vectorAddKernel_launch(d_A, d_B, d_C, N, blocksPerGrid, threadsPerBlock);
+    vectorAddGPU_launch(d_A, d_B, d_C, N, blocksPerGrid, threadsPerBlock);
 
     cudaEventRecord(stopEvent, 0);
     cudaEventSynchronize(stopEvent);
@@ -78,7 +78,7 @@ int main() {
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    vectorAddCpu(h_A, h_B, h_C, N);
+    vectorAddCPU(h_A, h_B, h_C, N);
 
     auto stop = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> cpuDuration = (stop - start);
