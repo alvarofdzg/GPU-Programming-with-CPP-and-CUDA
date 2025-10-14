@@ -78,6 +78,7 @@
         "fft": "cpp",
         "kroneckerproduct": "cpp",
         "numericaldiff": "cpp",
-        "specialfunctions": "cpp"
+        "specialfunctions": "cpp",
+        "hash_map": "cpp"
     }
 }
