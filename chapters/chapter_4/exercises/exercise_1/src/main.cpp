@@ -10,6 +10,7 @@ or not the number is prime). Copy the results back to the host and print only th
 #include <chrono>
 #include <iostream>
 
+#include "kernel_cpu.hpp"
 #include "kernel_gpu.cuh"
 
 int main() {
@@ -20,8 +21,10 @@ int main() {
     int totalNumbers = (end - start) / 2 + 1;
     int blocksPerGrid = (totalNumbers + threadsPerBlock - 1) / threadsPerBlock;
 
-    std::vector<int> h_tested(totalNumbers, 0);
-    std::vector<uint8_t> h_isPrime(totalNumbers, 0);
+    std::vector<int> h_tested_gpu(totalNumbers, 0);
+    std::vector<uint8_t> h_isPrime_gpu(totalNumbers, 0);
+    std::vector<int> tested_cpu(totalNumbers, 0);
+    std::vector<uint8_t> isPrime_cpu(totalNumbers, 0);
 
     // Device buffers
     int* d_tested = nullptr;
@@ -43,21 +46,26 @@ int main() {
     std::cout << "Time taken on GPU: " << gpuDuration << " ms" << std::endl;
 
     // Copy results back
-    cudaMemcpy(h_tested.data(), d_tested,
+    cudaMemcpy(h_tested_gpu.data(), d_tested,
                          totalNumbers * sizeof(int), cudaMemcpyDeviceToHost);
-    cudaMemcpy(h_isPrime.data(), d_isPrime,
+    cudaMemcpy(h_isPrime_gpu.data(), d_isPrime,
                          totalNumbers * sizeof(uint8_t), cudaMemcpyDeviceToHost);
 
-    // Print primes
-    std::cout << "Primes in [" << start << ", " << end << "]:\n";
-    int printed = 0;
-    for (int i = 0; i < totalNumbers; ++i) {
-        if (h_isPrime[i]) {
-            std::cout << h_tested[i] << ' ';
-            if (++printed % 16 == 0) std::cout << '\n';
+
+    auto startTime = std::chrono::high_resolution_clock::now();
+    checkPrimeCPULoop(start, end, tested_cpu, isPrime_cpu);
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> cpuDuration = endTime - startTime;
+    std::cout << "Time taken on CPU: " << std::fixed << cpuDuration.count() << " ms" << std::endl;
+
+    for (size_t i = 0; i < h_tested_gpu.size(); ++i) {
+        if (h_tested_gpu[i] != tested_cpu[i]) {
+            std::cout << "Mismatch in tested number at index " << i << ": GPU " << h_tested_gpu[i] << " vs CPU " << tested_cpu[i] << std::endl;
+        }
+        if (h_isPrime_gpu[i] != isPrime_cpu[i]) {
+            std::cout << "Mismatch in prime result at index " << i << ": GPU " << (int)h_isPrime_gpu[i] << " vs CPU " << (int)isPrime_cpu[i] << std::endl;
         }
     }
-    if (printed % 16) std::cout << '\n';
 
     // Cleanup
     cudaEventDestroy(startEvent);

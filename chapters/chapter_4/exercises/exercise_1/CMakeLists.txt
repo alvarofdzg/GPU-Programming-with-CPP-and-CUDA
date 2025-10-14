@@ -18,12 +18,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # ----- Sources -----
+set(CPU_SOURCES ${CMAKE_SOURCE_DIR}/src/kernel_cpu.cpp)
 if(HAS_CUDA)
   set(CUDA_SOURCES ${CMAKE_SOURCE_DIR}/src/kernel_gpu.cu)
 endif()
 
 add_executable(${PROJECT_NAME}
   ${CMAKE_SOURCE_DIR}/src/main.cpp
+  ${CPU_SOURCES}
   ${CUDA_SOURCES}
 )
 

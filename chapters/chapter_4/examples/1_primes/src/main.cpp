@@ -32,11 +32,9 @@ int main() {
     cudaEventDestroy(stopEvent);
 
     auto startTime = std::chrono::high_resolution_clock::now();
-
     for (long long num = start; num <= end; num += 2) {
         checkPrimeCPU(num);
     }
-
     auto endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> cpuDuration = endTime - startTime;
 
