@@ -64,9 +64,3 @@ void vectorModuleGPU_launch(
     int blocksPerGrid, 
     int threadsPerBlock
 );
-
-// __global__ void vectorModuleGPU(long long start, long long end);
-// void vectorModuleGPU_launch(long long start, long long end, int blocksPerGrid, int threadsPerBlock);
-
-// __global__ void vectorNorm2GPU(long long start, long long end);
-// void vectorNorm2GPU_launch(long long start, long long end, int blocksPerGrid, int threadsPerBlock);
