@@ -1,0 +1,8 @@
+5. A Closer Look into the World of GPUs
+    1. Execution pipeline:
+        1. Launch threads from my kernel. CUDA groups these into `warps` of 32 threads each.
+        2. These warps are assigned to Streaming Multiprocessors (SMs) - not directly to individual CUDA cores.
+        3. Inside each SM, the SM's warp scheduler(s) decide which warp to run at a given moment.
+        4. When a warp is scheduled:
+            Each thread of the warp executes the same instruction (SIMD style).
+            The 32 threads of the warp share the SM's CUDA cores - each instruction step is executed by many cores in parallel.
